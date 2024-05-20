@@ -1,7 +1,9 @@
 ﻿using DaihoWebAPI.Data;
 using DaihoWebAPI.Models;
+using DaihoWebAPI.Models.Response;
 using DaihoWebAPI.Utilities;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace DaihoWebAPI.Repositories
 {
@@ -14,10 +16,12 @@ namespace DaihoWebAPI.Repositories
             this.dbContext = dbContext;
         }
 
-        public async Task<ASM_Z_SCREEN> CreateAsync(ASM_Z_SCREEN aSM_Z_SCREEN)
+        public async Task<Responses> CreateAsync(ASM_Z_SCREEN aSM_Z_SCREEN)
         {
+            ASM_Z_SCREEN? sCREEN = null;
             using (var transaction = await dbContext.Database.BeginTransactionAsync())
             {
+                
                 try
                 {
                     await dbContext.ASM_Z_SCREENs.AddAsync(aSM_Z_SCREEN);
@@ -26,10 +30,15 @@ namespace DaihoWebAPI.Repositories
                 }
                 catch (Exception e)
                 {
-                    Utils.Errors.WrapDuplicateError(e, "duplicate role");
+                    if (Utils.Errors.IsDuplicateRecordException(e))
+                    {
+                        return Utilities.Utils.NewErrorResponse(null, e.Message,Constants.Status.Conflict, (int)HttpStatusCode.Conflict) ;
+                    }
+                    return Utils.NewErrorResponse(null, e.Message, Constants.Status.InternalServerErr, (int)System.Net.HttpStatusCode.InternalServerError);
+                    throw;
                 }
             }
-            return aSM_Z_SCREEN;
+            return Utils.NewSuccessResponse(aSM_Z_SCREEN, null);
         }
 
         public async Task<IEnumerable<ASM_Z_SCREEN>> GetAllAsync()

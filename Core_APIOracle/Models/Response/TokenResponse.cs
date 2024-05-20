@@ -8,6 +8,6 @@ namespace DaihoWebAPI.Models.Response
         public required DateTime ExpiresAt { get; set; }
 
         public required string Role { get; set; }
-
+        public List<string> Roles { get; set; } // New property for all roles
     }
 }

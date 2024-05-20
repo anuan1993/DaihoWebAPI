@@ -1,9 +1,12 @@
 ﻿using DaihoWebAPI.Data;
 using DaihoWebAPI.Models;
 using DaihoWebAPI.Models.DTO;
+using DaihoWebAPI.Models.Response;
 using DaihoWebAPI.Utilities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+
 
 namespace DaihoWebAPI.Repositories
 {
@@ -15,7 +18,7 @@ namespace DaihoWebAPI.Repositories
         {
             this.dbContext = dbContext;
         }
-        public async Task<ASM_Z_SCREEN_ROLE> CreateAsync(ASM_Z_SCREEN_ROLE ScreenRole)
+        public async Task<Responses> CreateAsync(ASM_Z_SCREEN_ROLE ScreenRole)
         {
 
             using (var transaction = await dbContext.Database.BeginTransactionAsync())
@@ -28,10 +31,15 @@ namespace DaihoWebAPI.Repositories
                 }
                 catch (Exception e)
                 {
-                    Utils.Errors.WrapDuplicateError(e, "failed on save");
+                    if (Utils.Errors.IsDuplicateRecordException(e))
+                    {
+                        return Utilities.Utils.NewErrorResponse(null, e.Message, Constants.Status.Conflict, (int)HttpStatusCode.Conflict);
+                    }
+                    return Utils.NewErrorResponse(null, e.Message, Constants.Status.InternalServerErr, (int)System.Net.HttpStatusCode.InternalServerError);
+                    throw;
                 }
             }
-            return ScreenRole;
+            return Utils.NewSuccessResponse(ScreenRole, null); ;
         }
 
         public async Task<IEnumerable<ASM_Z_SCREEN_ROLE>> deleteAsync(string id)

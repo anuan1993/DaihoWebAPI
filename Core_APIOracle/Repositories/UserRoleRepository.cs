@@ -29,7 +29,7 @@ namespace DaihoWebAPI.Repositories
             {
                 try
                 {
-                    UserRole.ID = $"{UserRole.ROLEID}{UserRole.USERID}";
+                   
                     await dbContext.UserRoles.AddAsync(UserRole);
                     await dbContext.SaveChangesAsync();
                     await transaction.CommitAsync();
@@ -81,7 +81,8 @@ namespace DaihoWebAPI.Repositories
                                     USERNAME = user.USR_NM,
                                     USERID = user.USR_ID,
                                     ROLENAME = role.ROLENAME,
-                                    ID=asmRole.ID
+                                    ID=asmRole.ID,
+                                   
 
                                 }).ToListAsync();
 
@@ -89,7 +90,7 @@ namespace DaihoWebAPI.Repositories
         }
 
 
-        public async Task<IEnumerable<userRole>> UpdateAsync(string id, RoleIdDto userRoles)
+        public async Task<IEnumerable<userRole>> UpdateAsync(int id, RoleIdDto userRoles)
         {
             var userRole = await dbContext.UserRoles
                  .Where(item => item.ID == id) // Assuming Id is the primary key property

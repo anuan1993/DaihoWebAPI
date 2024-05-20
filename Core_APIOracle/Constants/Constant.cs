@@ -1,7 +1,6 @@
 ﻿namespace DaihoWebAPI.Constants
 {
-    public class Constant
-    {
+   
         public class Status
         {
             public const string BadRequestErr = "BAD_REQUEST";
@@ -13,5 +12,5 @@
             public const string Forbidden = "FORBIDDEN";
             public const string Conflict = "CONFLICT";
         }
-    }
+    
 }

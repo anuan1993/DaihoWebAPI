@@ -3,8 +3,11 @@ using DaihoWebAPI.Models;
 using DaihoWebAPI.Models.DTO;
 using DaihoWebAPI.Repositories;
 using DaihoWebAPI.Utilities;
+using DaihoWebAPI.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using Microsoft.AspNetCore.Components.Server;
 
 namespace DaihoWebAPI.Controllers
 {
@@ -25,8 +28,10 @@ namespace DaihoWebAPI.Controllers
         [HttpPost ]
         public async Task<IActionResult> CreateAsync([FromBody] ASM_Z_SCREEN_ROLE aSM_Z_SCREEN_ROLE)
         {
-            var resp = await _aSM_Z_SCREEN_ROLE.CreateAsync(aSM_Z_SCREEN_ROLE);
-            return Ok(resp);
+            
+                var resp = await _aSM_Z_SCREEN_ROLE.CreateAsync(aSM_Z_SCREEN_ROLE);
+                return StatusCode(resp.Code, resp);
+            
         }
            
 

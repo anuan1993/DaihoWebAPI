@@ -29,8 +29,9 @@ namespace DaihoWebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ASM_Z_SCREEN screen)
         {
+            
             var resp = await aSM_Z_SCREENS.CreateAsync(screen);
-            return Ok(resp);
+            return StatusCode(resp.Code, resp);
         }
     }
 }

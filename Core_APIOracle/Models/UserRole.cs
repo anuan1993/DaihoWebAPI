@@ -15,7 +15,8 @@ namespace DaihoWebAPI.Models
         public DateTime UPDATEDDATE { get; set; }
         public DateTime CREATEDDATE { get; set; }
         [Key]
-        public string ID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int ID { get; set; }
 
     }
 }

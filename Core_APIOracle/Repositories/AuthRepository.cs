@@ -10,8 +10,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using DaihoWebAPI.Utilities;
-using static DaihoWebAPI.Constants.Constant;
+using DaihoWebAPI.Constants;
 using System.Net;
+using Microsoft.EntityFrameworkCore;
 
 namespace DaihoWebAPI.Repositories
 {
@@ -33,6 +34,7 @@ namespace DaihoWebAPI.Repositories
         {
             bool isValid = true;
             //Response? resp;
+            
 
             using (var connection = new OracleConnection(_connectionString))
             {
@@ -62,14 +64,40 @@ namespace DaihoWebAPI.Repositories
                             authClaims.Add(new Claim("USR_ID", reader["USR_ID"].ToString()));
                             authClaims.Add(new Claim("CO_CD", reader["CO_CD"].ToString()));
                             authClaims.Add(new Claim("INVALIDATE_FLG", reader["INVALIDATE_FLG"].ToString()));
-                            // Map data from the reader to your entity
+
+                            // Fetch roles from the database
+                            var userRoles = await (from role in dbContext.aSM_Z_ROLEs
+                                                join asmRole in dbContext.UserRoles on role.ROLEID equals asmRole.ROLEID
+                                                join user in dbContext.Users on asmRole.USERID equals user.USR_ID
+                                                where user.USR_ID == USR_ID
+                                                select new DaihoWebAPI.Models.DTO.UserRolesDTO
+                                                {
+                                                    //ID=asmRole.ID,
+                                                    ROLEID = role.ROLEID,
+                                                    USERNAME = user.USR_NM,
+                                                    USERID = user.USR_ID,
+                                                    ROLENAME = role.ROLENAME,
+                                                    ID = asmRole.ID,
+
+
+                                                }).ToListAsync();
+                            // Collect roles into a list
+                            var roles = new List<string>();
+
+                            foreach (var userRole in userRoles)
+                            {
+                                var role = userRole.ROLEID;
+                                roles.Add(role);
+                                authClaims.Add(new Claim(ClaimTypes.Role, role));
+                            }
                             var token = GetToken(authClaims);
-                          
+
                             var tokenResp = new Models.Response.TokenResponse
                             {
                                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                                 ExpiresAt = token.ValidTo,
-                                Role ="admin"
+                                Role = "admin",
+                                Roles= roles
                             };
 
                             

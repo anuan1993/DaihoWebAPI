@@ -9,7 +9,7 @@ namespace DaihoWebAPI.Repositories
     {
         Task<IEnumerable<DaihoWebAPI.Models.DTO.UserRolesDTO>> GetAllAsync();
         Task<userRole> CreateAsync(userRole UserRole);
-        Task<IEnumerable<userRole>> UpdateAsync(string id, RoleIdDto idDto);
+        Task<IEnumerable<userRole>> UpdateAsync(int id, RoleIdDto idDto);
         Task<IEnumerable<userRole>> deleteAsync(UserRolesDTO id);
         Task<IEnumerable<UserRolesDTO>> GetUserAsync();
     }

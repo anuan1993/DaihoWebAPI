@@ -44,7 +44,7 @@ namespace DaihoWebAPI.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> updateAsync(string id, RoleIdDto userRole)
+        public async Task<IActionResult> updateAsync(int id, RoleIdDto userRole)
         {
             var resp = await _userRole.UpdateAsync(id, userRole);
             return Ok(resp);

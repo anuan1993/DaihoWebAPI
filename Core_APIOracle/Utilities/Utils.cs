@@ -5,6 +5,7 @@ using DaihoWebAPI.Constants;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 using System.Runtime.Serialization;
+using Oracle.ManagedDataAccess.Client;
 
 namespace DaihoWebAPI.Utilities
 {
@@ -17,7 +18,7 @@ namespace DaihoWebAPI.Utilities
                 Data = data,
                 Success = true,
                 Message = message,
-                Status = Constant.Status.StatusOK,
+                Status = Status.StatusOK,
                 Code = (int)HttpStatusCode.OK,
                 //Pagination = pagination,
             };
@@ -31,7 +32,7 @@ namespace DaihoWebAPI.Utilities
                 Success = false,
                 Message = message,
                 Status = status,
-                Code = code,
+                Code =(int) code,
             };
         }
         public class Errors
@@ -56,6 +57,20 @@ namespace DaihoWebAPI.Utilities
                     }
                     throw e;
                 }
+            }
+
+            public static bool IsDuplicateRecordException(Exception e)
+            {
+                // Check if the exception or any of its inner exceptions is related to a unique constraint violation in Oracle
+                var oracleException = e as OracleException ?? e.InnerException as OracleException;
+                if (oracleException != null)
+                {
+                    // Check if the Oracle error number corresponds to a unique constraint violation
+                    // ORA-00001 is the error code for unique constraint violation in Oracle
+                    return oracleException.Number == 1;
+                }
+
+                return false;
             }
 
             public static string? ExtractValue(Exception? e)
